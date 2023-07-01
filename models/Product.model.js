@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const types = mongoose.Types;
+const mongoose = require("mongoose")
 
 const productSchema = new mongoose.Schema(
   {
@@ -26,15 +26,14 @@ const productSchema = new mongoose.Schema(
       type: Number,
       default: 300,
     },
+    //we don't know if we need this one haha
     soldAt: {
       type: Date,
     },
-    image: {
+    image: [{
       type: String,
-    },
-    catergory: {
-      type: String,
-    },
+    }],
+    //this is for the timer
     auctionStarted: {
       type: Boolean,
       default: false,
@@ -48,21 +47,21 @@ const productSchema = new mongoose.Schema(
       default: false,
     },
     seller: {
-      type: types.ObjectId,
+      type: mongoose.Types.ObjectId,
       ref: 'seller',
     },
     buyer: {
-      type: types.ObjectId,
+      type: mongoose.Types.ObjectId,
       ref: 'buyer',
     },
     currentBidder: {
-      type: types.ObjectId,
+      type: mongoose.Types.ObjectId,
       ref: 'buyer',
     },
     bids: [
       {
         buyer: {
-          type: types.ObjectId,
+          type: mongoose.Types.ObjectId,
           ref: 'buyer',
           required: true,
         },

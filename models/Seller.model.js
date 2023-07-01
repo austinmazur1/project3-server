@@ -37,10 +37,10 @@ const sellerSchema = new Schema(
         ref: "product"
       }
     ],
-    seller: {
-      type: Boolean,
-      required: true
-    }
+    message: [{
+        type: mongoose.Types.ObjectId,
+        ref: "message",
+    }],
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`

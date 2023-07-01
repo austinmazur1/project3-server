@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose");
-
+const mongoose = require("mongoose")
 
 const messageSchema = new Schema({
     question: {
@@ -11,7 +11,7 @@ const messageSchema = new Schema({
         ref: "seller"
     },
     product: {
-        type: types.ObjectId,
+        type: mongoose.Types.ObjectId,
         ref: "product",
         required: true
     }

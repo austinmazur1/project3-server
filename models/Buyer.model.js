@@ -40,13 +40,31 @@ const buyerSchema = new Schema(
     buyer: {
       type: Boolean,
       required: true
-    }
+    },
+    message: [{
+        type: mongoose.Types.ObjectId,
+        ref: "message",
+    }],
+    bid: [{
+        product: {
+            type: mongoose.Types.ObjectId,
+            ref: "product",
+          },
+          amount: {
+            type: Number,
+            required: true,
+          },
+          time: {
+            type: Date,
+            default: Date.now,
+          },
+  }]
   },
   {
     timestamps: true,
   }
 );
 
-const Seller = model("Buyer", buyerSchema);
+const Buyer = model("Buyer", buyerSchema);
 
 module.exports = Buyer;
