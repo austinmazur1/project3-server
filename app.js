@@ -18,7 +18,8 @@ require("./config")(app);
 const indexRoutes = require("./routes/index.routes");
 app.use("/api", indexRoutes);
 
-const authRoutes = require("./routes/auth.routes");
+// Do the same for the buyer auth routes
+const authRoutes = require("./routes/auth.seller.routes");
 app.use("/auth", authRoutes);
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
