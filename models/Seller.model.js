@@ -7,6 +7,10 @@ const sellerSchema = new Schema(
       type: String,
       // required: true
     },
+    seller: {
+      type: Boolean,
+      required: true
+    },
     email: {
       type: String,
       required: [true, "Email is required."],
