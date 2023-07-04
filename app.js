@@ -22,14 +22,14 @@ app.use("/api", indexRoutes);
 const authRoutes = require("./routes/auth.routes");
 app.use("/auth", authRoutes);
 
+const productRouter = require("./routes/product.routes");    
+app.use("/", productRouter);       
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
 
 
 //CREATE NEW PRODUCT
-const productRouter = require("./routes/product.routes");    
-app.use("/api", productRouter);       
 
 module.exports = app;
 

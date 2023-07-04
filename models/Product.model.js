@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const { Schema, model } = require("mongoose");
 const mongoose = require("mongoose")
 
 const productSchema = new mongoose.Schema(
@@ -64,11 +64,11 @@ const productSchema = new mongoose.Schema(
         buyer: {
           type: mongoose.Types.ObjectId,
           ref: 'buyer',
-          required: true,
+          // required: true,
         },
         amount: {
           type: Number,
-          required: true,
+          // required: true,
         },
         time: {
           type: Date,
