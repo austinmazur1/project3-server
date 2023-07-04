@@ -9,6 +9,7 @@ const productSchema = new mongoose.Schema(
     },
     description: {
       type: String,
+      required: true,
     },
     startingPrice: {
       type: Number,
@@ -16,11 +17,11 @@ const productSchema = new mongoose.Schema(
     },
     currentPrice: {
       type: Number,
-      required: true,
     },
     duration: {
       type: Number,
       default: 300,
+      required: true,
     },
     timer: {
       type: Number,
@@ -30,7 +31,7 @@ const productSchema = new mongoose.Schema(
     soldAt: {
       type: Date,
     },
-    image: [{
+    images: [{
       type: String,
     }],
     //this is for the timer
