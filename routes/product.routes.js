@@ -2,13 +2,32 @@ const express = require("express");
 const router = express.Router();
 // const mongoose = require("mongoose");
 const Product = require("../models/Product.model");
+const Seller = require("../models/Seller.model");
 const multer = require("multer");
 
 const upload = multer();
 
 const { isAuthenticated } = require("../middleware/jwt.middleware");
 
-//  POST /api/projects  -  Creates a new product
+
+//  GET /seller/dashboard  -  Shows all the products
+
+router.get(
+  '/seller/dashboard', 
+  isAuthenticated,
+(req, res, next) => {
+  const userId = req.payload._id;
+  Seller.findById(userId)
+    .then()
+        Product.find({userId}) 
+        .then(allProductsFromUser => res.json(allProductsFromUser))
+        .catch(err => res.json(err));
+});
+ 
+
+
+
+//  POST /seller/new-product  -  Creates a new product
 router.post(
   "/seller/new-product",
   isAuthenticated,
@@ -36,5 +55,8 @@ router.post(
       .catch((err) => res.json(err));
   }
 );
+
+
+
 
 module.exports = router;
