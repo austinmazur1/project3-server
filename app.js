@@ -18,7 +18,7 @@ const { isAuthenticated } = require("./middleware/jwt.middleware")
 
 // 👇 Start handling routes here
 const indexRoutes = require("./routes/index.routes");
-app.use("/api", indexRoutes);
+app.use("/", indexRoutes);
 
 // Do the same for the buyer auth routes
 const authRoutes = require("./routes/auth.routes");
@@ -26,6 +26,8 @@ app.use("/auth", authRoutes);
 
 const productRouter = require("./routes/product.routes");    
 app.use("/", productRouter);       
+
+
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
