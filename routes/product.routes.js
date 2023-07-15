@@ -12,16 +12,18 @@ const { isAuthenticated } = require("../middleware/jwt.middleware");
 
 //  GET /seller/dashboard  -  Shows all the products
 
-router.get(
-  '/seller/dashboard', 
-  isAuthenticated,
-(req, res, next) => {
+router.get('/seller/dashboard', isAuthenticated, (req, res, next) => {
   const userId = req.payload._id;
   Seller.findById(userId)
-    .then()
-        Product.find({userId}) 
+    .then(seller => {
+      if (!seller) {
+        return res.status(404).json({ message: 'Seller not found' });
+      }
+      return Product.find({ userId })
         .then(allProductsFromUser => res.json(allProductsFromUser))
-        .catch(err => res.json(err));
+        .catch(err => res.status(500).json(err));
+    })
+    .catch(err => res.status(500).json(err));
 });
  
 
