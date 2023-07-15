@@ -37,7 +37,17 @@ router.get("/buyer/dashboard", async (req, res, next) => {
 //TODO display specific product
 router.get("/buyer/:id", async (req, res, next) => {
   try {
-  } catch (error) {}
+    const productId = req.params.id
+    console.log(productId)
+    const product = await Product.findById(productId)
+    const sellerId = product.seller
+
+    const seller = await Seller.findById(sellerId);
+
+    res.json({product, seller})
+  } catch (error) {
+    next(error)
+  }
 });
 
 //  POST /api/projects  -  Creates a new product
