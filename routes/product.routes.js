@@ -19,6 +19,8 @@ router.get("/seller/dashboard", isAuthenticated, (req, res, next) => {
     .catch((err) => res.json(err));
 });
 
+
+
 router.get("/buyer/dashboard", async (req, res, next) => {
   try {
     const products = await Product.find();
