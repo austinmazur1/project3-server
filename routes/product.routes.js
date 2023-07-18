@@ -5,7 +5,9 @@ const Product = require("../models/Product.model");
 const Seller = require("../models/Seller.model");
 const multer = require("multer");
 
-const upload = multer();
+const fileUploader = require("../config/cloudinary.config");
+
+const upload = fileUploader.single("imageUrl");
 
 const { isAuthenticated } = require("../middleware/jwt.middleware");
 
@@ -22,19 +24,13 @@ const { isAuthenticated } = require("../middleware/jwt.middleware");
 
 router.get("/seller/dashboard/:id", async (req, res, next) => {
   try {
-// const products = await Product.find();
     const userId = req.params.id;
-     const products = await Product.find({seller: userId});
-   console.log(products)
+    const products = await Product.find({ seller: userId });
     res.json(products);
-    
   } catch (error) {
     next(error);
   }
 });
-
-
-
 
 router.get("/buyer/dashboard", async (req, res, next) => {
   try {
@@ -54,63 +50,51 @@ router.get("/buyer/dashboard", async (req, res, next) => {
 //TODO display specific product
 router.get("/buyer/:id", async (req, res, next) => {
   try {
-    const productId = req.params.id
-    console.log(productId)
-    const product = await Product.findById(productId)
-    const sellerId = product.seller
+    const productId = req.params.id;
+    console.log(productId);
+    const product = await Product.findById(productId);
+    const sellerId = product.seller;
 
     const seller = await Seller.findById(sellerId);
 
-    res.json({product, seller})
+    res.json({ product, seller });
   } catch (error) {
-    next(error)
+    next(error);
+  }
+});
+
+//route that recieves an image and send to cloudinary via fileUploaded, returns url
+router.post("/upload", upload, (req, res, next) => {
+  console.log("file is", req.file);
+
+  if (!req.file) {
+    res.status(400).json({ error: "No image uploaded" });
+  } else {
+    res.json({ fileUrl: req.file.path });
   }
 });
 
 //  POST /api/projects  -  Creates a new product
-//TODO fix images 
-router.post(
-  "/seller/new-product",
-  isAuthenticated,
-  upload.single("image"),
-  (req, res, next) => {
-    const { productName, description, startingPrice, duration } = req.body;
-    const image = req.file;
-    const userId = req.payload._id;
-    // console.log("PAYLOAD", req.payload);
+router.post("/seller/new-product", isAuthenticated, (req, res, next) => {
+  const { productName, description, startingPrice, duration, imageUrl } =
+    req.body;
+  console.log("body", req.body);
+  const userId = req.payload._id;
 
-    if (!image) {
-      return res.status(400).json({ error: "No image uploaded" });
-    }
+  console.log("imageUrl", imageUrl);
 
-    const allowedTypes = ["image/jpeg", "image/png"];
-    if (!allowedTypes.includes(image.mimetype)) {
-      return res.status(400).json({ error: "Invalid file type" });
-    }
-
-    const maxFileSize = 5 * 1024 * 1024; //5MB
-    if (image.size > maxFileSize) {
-      return res.status(400).json({ error: "File exceeds the limit" });
-    }
-
-    const imageFilePath = `uploads/${image.filename}`;
-
-    Product.create({
-      productName,
-      description,
-      startingPrice,
-      duration,
-      seller: userId,
-      image: {
-        data: imageFilePath,
-        contentType: image.mimetype,
-      },
+  Product.create({
+    productName,
+    description,
+    startingPrice,
+    duration,
+    seller: userId,
+    imageUrl,
+  })
+    .then((response) => {
+      res.json(response);
     })
-      .then((response) => {
-        res.json(response);
-      })
-      .catch((err) => res.json(err));
-  }
-);
+    .catch((err) => res.json(err));
+});
 
 module.exports = router;
