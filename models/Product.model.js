@@ -32,9 +32,9 @@ const productSchema = new mongoose.Schema(
       type: Date,
     },
     // updated for single image
-    image: {
-      data: Buffer, // Use Buffer type to store binary data
-      contentType: String, // Store the content type of the image
+    imageUrl: {
+      type: String,
+      required: true
     },
     //this is for the timer
     auctionStarted: {
