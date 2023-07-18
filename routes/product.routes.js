@@ -20,12 +20,12 @@ const { isAuthenticated } = require("../middleware/jwt.middleware");
 });
 */
 
-router.get("/seller/dashboard", async (req, res, next) => {
+router.get("/seller/dashboard/:id", async (req, res, next) => {
   try {
-
-    const userId = req.payload._id;
-    const products = await Product.find({seller: userId});
-   
+// const products = await Product.find();
+    const userId = req.params.id;
+     const products = await Product.find({seller: userId});
+   console.log(products)
     res.json(products);
     
   } catch (error) {
