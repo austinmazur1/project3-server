@@ -11,13 +11,28 @@ const { isAuthenticated } = require("../middleware/jwt.middleware");
 
 //  GET /seller/dashboard  -  Shows all the products
 
-router.get("/seller/dashboard", isAuthenticated, (req, res, next) => {
+/*router.get("/seller/dashboard", isAuthenticated, (req, res, next) => {
   const userId = req.payload._id;
   Seller.findById(userId).then();
   Product.find({ userId })
     .then((allProductsFromUser) => res.json(allProductsFromUser))
     .catch((err) => res.json(err));
 });
+*/
+
+router.get("/seller/dashboard", async (req, res, next) => {
+  try {
+
+    const userId = req.payload._id;
+    const products = await Product.find({seller: userId});
+   
+    res.json(products);
+    
+  } catch (error) {
+    next(error);
+  }
+});
+
 
 
 
