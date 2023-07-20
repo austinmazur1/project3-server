@@ -56,11 +56,11 @@ router.get("/buyer/:id", async (req, res) => {
 
 // POST - Place a bid
 
-router.post("/buyer/:id",  (req, res, next ) => {
+router.post("/buyer/:id",  async (req, res, next ) => {
   const productId = req.params.id;
   const { currentPrice } = req.body;
 
-  const product = Product.findById(productId)
+  const product = await Product.findById(productId)
 
   if (!product) {
     return res.status(404).json({ message: "Product not found." });
