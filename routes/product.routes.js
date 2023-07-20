@@ -11,16 +11,7 @@ const upload = fileUploader.single("imageUrl");
 
 const { isAuthenticated } = require("../middleware/jwt.middleware");
 
-//  GET /seller/dashboard  -  Shows all the products
 
-/*router.get("/seller/dashboard", isAuthenticated, (req, res, next) => {
-  const userId = req.payload._id;
-  Seller.findById(userId).then();
-  Product.find({ userId })
-    .then((allProductsFromUser) => res.json(allProductsFromUser))
-    .catch((err) => res.json(err));
-});
-*/
 
 router.get("/seller/dashboard/:id", async (req, res, next) => {
   try {
@@ -48,7 +39,7 @@ router.get("/buyer/dashboard", async (req, res, next) => {
 });
 
 //TODO display specific product
-router.get("/buyer/:id", async (req, res, next) => {
+router.get("/buyer/:id", async (req, res) => {
   try {
     const productId = req.params.id;
     console.log(productId);
@@ -62,6 +53,27 @@ router.get("/buyer/:id", async (req, res, next) => {
     next(error);
   }
 });
+
+// POST - Place a bid
+
+router.post("/buyer/:id",  (req, res, next ) => {
+  const productId = req.params.id;
+  const { currentPrice } = req.body;
+
+  const product = Product.findById(productId)
+
+  if (!product) {
+    return res.status(404).json({ message: "Product not found." });
+  }
+
+  if (currentPrice <= product.currentPrice) {
+    return res.status(400).json({ message: "Bid must be higher than the current price." });
+  }
+  product.currentPrice = currentPrice;
+
+  return res.status(200).json({ message: "Bid placed successfully.", product });
+});
+
 
 //route that recieves an image and send to cloudinary via fileUploaded, returns url
 router.post("/upload", upload, (req, res, next) => {
@@ -96,5 +108,7 @@ router.post("/seller/new-product", isAuthenticated, (req, res, next) => {
     })
     .catch((err) => res.json(err));
 });
+
+
 
 module.exports = router;
