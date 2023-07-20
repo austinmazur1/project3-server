@@ -61,7 +61,7 @@ const productSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: 'buyer',
     },
-    bids: [
+    /*bids: [
       {
         buyer: {
           type: mongoose.Types.ObjectId,
@@ -77,7 +77,7 @@ const productSchema = new mongoose.Schema(
           default: Date.now,
         },
       },
-    ],
+    ],*/
   },
   { timestamps: true }
 );
