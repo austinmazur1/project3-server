@@ -54,6 +54,50 @@ router.get("/buyer/:id", async (req, res) => {
   }
 });
 
+router.get('/seller/:id', async (req, res, next) => {
+  try {
+    const productId = req.params.id;
+    const product = await Product.findById(productId);  
+
+    res.json({product})
+  } catch (error) {
+    next(error)
+  }
+})
+// Update product
+router.post('/seller/:id', async (req, res, next) => {
+  try {
+    const productId = req.params.id;
+    const { productName, description } = req.body 
+    console.log(productName)
+    console.log('productId', productId)
+    console.log('updates', req.body)
+    const updatedProduct = await Product.findByIdAndUpdate(productId, {productName, description}, {new: true})
+
+    if(!updatedProduct) {
+      return res.status(404).json({error: 'Product not found'})
+    }
+    res.json(updatedProduct)
+  } catch (error) {
+    next(error)
+  }
+})
+
+//  Delete product
+router.delete('/seller/:id', async (req, res, next) => {
+  try {
+    const productId = req.params.id;
+    await Product.findByIdAndDelete(productId);
+    if(!productId) {
+      return res.status(404).json({error: 'Product not found'})
+    }
+
+    res.status(200).json({success: "Product deleted"})
+  } catch (error) {
+    next(error)
+  }
+})
+
 // POST - Place a bid
 
 router.post("/buyer/:id",  async (req, res, next ) => {
