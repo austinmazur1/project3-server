@@ -17,6 +17,7 @@ const productSchema = new mongoose.Schema(
     },
     currentPrice: {
       type: Number,
+      default: 0
     },
     duration: {
       type: Number,

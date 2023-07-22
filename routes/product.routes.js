@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router();
-// const mongoose = require("mongoose");
 const Product = require("../models/Product.model");
+const Buyer = require("../models/Buyer.model")
 const Seller = require("../models/Seller.model");
-const multer = require("multer");
 
 const fileUploader = require("../config/cloudinary.config");
 
@@ -29,7 +28,7 @@ router.get("/buyer/dashboard", async (req, res, next) => {
     if (products.includes("seller")) {
       console.log(true);
     } else {
-      console.log(false);
+      console.log("includes Seller?",false);
     }
 
     res.json(products);
@@ -39,37 +38,90 @@ router.get("/buyer/dashboard", async (req, res, next) => {
 });
 
 //TODO display specific product
-router.get("/buyer/:id", async (req, res) => {
+router.get("/buyer/:id", async (req, res, next) => {
   try {
     const productId = req.params.id;
     console.log(productId);
     const product = await Product.findById(productId);
+    const bidderId = product.currentBidder
+    const currentBidder = await Buyer.findById(bidderId);
     const sellerId = product.seller;
 
     const seller = await Seller.findById(sellerId);
 
-    res.json({ product, seller });
+    res.json({ product, seller, currentBidder });
   } catch (error) {
     next(error);
   }
 });
 
+router.get('/seller/:id', async (req, res, next) => {
+  try {
+    const productId = req.params.id;
+    const product = await Product.findById(productId);
+    
+    const bidderId = product.currentBidder
+    const currentBidder = await Buyer.findById(bidderId);
+
+    res.json({product, currentBidder})
+  } catch (error) {
+    next(error)
+  }
+})
+
+// TODO fix update
+// Update product
+// router.post('/seller/:id', async (req, res, next) => {
+//   try {
+//     const productId = req.params.id;
+//     const { productName, description } = req.body 
+//     console.log(productName)
+//     console.log('productId', productId)
+//     console.log('updates', req.body)
+//     const updatedProduct = await Product.findByIdAndUpdate(productId, {productName, description}, {new: true})
+
+//     if(!updatedProduct) {
+//       return res.status(404).json({error: 'Product not found'})
+//     }
+//     res.json(updatedProduct)
+//   } catch (error) {
+//     next(error)
+//   }
+// })
+
+//  Delete product
+router.delete('/seller/:id', async (req, res, next) => {
+  try {
+    const productId = req.params.id;
+    await Product.findByIdAndDelete(productId);
+    if(!productId) {
+      return res.status(404).json({error: 'Product not found'})
+    }
+
+    res.status(200).json({success: "Product deleted"})
+  } catch (error) {
+    next(error)
+  }
+})
+
 // POST - Place a bid
 
 router.post("/buyer/:id",  async (req, res, next ) => {
   const productId = req.params.id;
-  const { currentPrice } = req.body;
+  console.log(req.body)
+  const { currentPrice, currentBidder } = req.body;
 
-  const product = await Product.findById(productId)
+
+  const product = await Product.findByIdAndUpdate(productId, {currentPrice, currentBidder})
 
   if (!product) {
     return res.status(404).json({ message: "Product not found." });
   }
 
-  if (currentPrice <= product.currentPrice) {
+  if (currentPrice < product.currentPrice) {
     return res.status(400).json({ message: "Bid must be higher than the current price." });
   }
-  product.currentPrice = currentPrice;
+  // product.currentPrice = currentPrice;
 
   return res.status(200).json({ message: "Bid placed successfully.", product });
 });
