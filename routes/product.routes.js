@@ -59,9 +59,11 @@ router.get('/seller/:id', async (req, res, next) => {
   try {
     const productId = req.params.id;
     const product = await Product.findById(productId);
+console.log(product)
     
     const bidderId = product.currentBidder
     const currentBidder = await Buyer.findById(bidderId);
+    console.log(currentBidder)
 
     res.json({product, currentBidder})
   } catch (error) {
@@ -110,18 +112,21 @@ router.post("/buyer/:id",  async (req, res, next ) => {
   const productId = req.params.id;
   console.log(req.body)
   const { currentPrice, currentBidder } = req.body;
+  const priceToNumber = parseInt(currentPrice)
 
-
-  const product = await Product.findByIdAndUpdate(productId, {currentPrice, currentBidder})
-
+  const product = await Product.findById(productId);
   if (!product) {
     return res.status(404).json({ message: "Product not found." });
   }
 
-  if (currentPrice < product.currentPrice) {
-    return res.status(400).json({ message: "Bid must be higher than the current price." });
+  if(priceToNumber <= product.currentPrice || priceToNumber <= product.startingPrice) {
+    return res.status(400).json({message: 'Bid must be higher than the current price.'})
   }
-  // product.currentPrice = currentPrice;
+
+  product.currentPrice = priceToNumber;
+  product.currentBidder = currentBidder;
+
+  await product.save();
 
   return res.status(200).json({ message: "Bid placed successfully.", product });
 });
