@@ -51,6 +51,13 @@ router.get("/buyer/:id", async (req, res, next) => {
 
     const seller = await Seller.findById(sellerId);
 
+    const now = new Date().getTime();
+    const expirationDate = product.createdAt.getTime();
+    const timer = product.duration
+    const remainingTime = Math.max(expirationDate - now, 0)
+    console.log(remainingTime)
+    console.log(expirationDate)
+
     res.json({ product, seller, currentBidder });
   } catch (error) {
     next(error);
