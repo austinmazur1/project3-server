@@ -51,7 +51,16 @@ router.get("/buyer/:id", async (req, res, next) => {
 
     const seller = await Seller.findById(sellerId);
 
-    res.json({ product, seller, currentBidder });
+// timer
+    const now = new Date().getTime();
+    const expirationDate = product.createdAt.getTime() + product.duration * 1000;
+    const remainingTime = Math.max(expirationDate - now, 0)
+
+    const remainingTimer = Math.max(product.timer - Math.floor(remainingTime / 1000), 0);
+    console.log(remainingTimer)
+    console.log(expirationDate)
+
+    res.json({ product, seller, currentBidder, remainingTime, remainingTimer });
   } catch (error) {
     next(error);
   }
@@ -67,7 +76,14 @@ console.log(product)
     const currentBidder = await Buyer.findById(bidderId);
     console.log(currentBidder)
 
-    res.json({product, currentBidder})
+    // timer
+    const now = new Date().getTime();
+    const expirationDate = product.createdAt.getTime() + product.duration * 1000;
+    const remainingTime = Math.max(expirationDate - now, 0)
+
+    const remainingTimer = Math.max(product.timer - Math.floor(remainingTime / 1000), 0);
+
+    res.json({product, currentBidder, remainingTime, remainingTimer})
   } catch (error) {
     next(error)
   }
