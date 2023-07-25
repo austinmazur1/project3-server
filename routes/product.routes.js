@@ -74,16 +74,18 @@ console.log(product)
     
     const bidderId = product.currentBidder
     const currentBidder = await Buyer.findById(bidderId);
-    console.log(currentBidder)
+    // console.log(currentBidder)
 
     // timer
     const now = new Date().getTime();
-    const expirationDate = product.createdAt.getTime() + product.duration * 1000;
-    const remainingTime = Math.max(expirationDate - now, 0)
+    const expirationDateInMilliseconds = product.createdAt.getTime() + product.duration * 60 * 1000;
+    console.log(expirationDateInMilliseconds)
+    // const remainingTime = Math.max(expirationDate - now, 0)
 
-    const remainingTimer = Math.max(product.timer - Math.floor(remainingTime / 1000), 0);
+    // const elapsedTime = now - product.createdAt.getTime();
+    // const remainingTimer = Math.max(product.timer - Math.floor(elapsedTime / 1000), 0);
 
-    res.json({product, currentBidder, remainingTime, remainingTimer})
+    res.json({product, currentBidder, expirationDateInMilliseconds})
   } catch (error) {
     next(error)
   }
