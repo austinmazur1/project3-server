@@ -14,7 +14,6 @@ const { isAuthenticated } = require("../middleware/jwt.middleware");
 
 router.get("/seller/dashboard", async (req, res, next) => {
   try {
-    console.log("Query",req.query.userId)
     const userId = req.query.userId;
 
     const products = await Product.find({ seller: userId });
@@ -27,11 +26,6 @@ router.get("/seller/dashboard", async (req, res, next) => {
 router.get("/buyer/dashboard", async (req, res, next) => {
   try {
     const products = await Product.find();
-    if (products.includes("seller")) {
-      console.log(true);
-    } else {
-      console.log("includes Seller?",false);
-    }
 
     res.json(products);
   } catch (error) {
@@ -43,7 +37,6 @@ router.get("/buyer/dashboard", async (req, res, next) => {
 router.get("/buyer/:id", async (req, res, next) => {
   try {
     const productId = req.params.id;
-    console.log(productId);
     const product = await Product.findById(productId);
     const bidderId = product.currentBidder
     const currentBidder = await Buyer.findById(bidderId);
@@ -57,8 +50,7 @@ router.get("/buyer/:id", async (req, res, next) => {
     const remainingTime = Math.max(expirationDate - now, 0)
 
     const remainingTimer = Math.max(product.timer - Math.floor(remainingTime / 1000), 0);
-    console.log(remainingTimer)
-    console.log(expirationDate)
+
 
     res.json({ product, seller, currentBidder, remainingTime, remainingTimer });
   } catch (error) {
@@ -70,7 +62,6 @@ router.get('/seller/:id', async (req, res, next) => {
   try {
     const productId = req.params.id;
     const product = await Product.findById(productId);
-console.log(product)
     
     const bidderId = product.currentBidder
     const currentBidder = await Buyer.findById(bidderId);
@@ -79,7 +70,6 @@ console.log(product)
     // timer
     const now = new Date().getTime();
     const expirationDateInMilliseconds = product.createdAt.getTime() + product.duration * 60 * 1000;
-    console.log(expirationDateInMilliseconds)
     // const remainingTime = Math.max(expirationDate - now, 0)
 
     // const elapsedTime = now - product.createdAt.getTime();
@@ -130,7 +120,6 @@ router.delete('/seller/:id', async (req, res, next) => {
 
 router.post("/buyer/:id",  async (req, res, next ) => {
   const productId = req.params.id;
-  console.log(req.body)
   const { currentPrice, currentBidder } = req.body;
   const priceToNumber = parseInt(currentPrice)
 
@@ -162,6 +151,33 @@ router.post("/upload", upload, (req, res, next) => {
     res.json({ fileUrl: req.file.path });
   }
 });
+
+router.put("/buyer/:id", async (req, res, next) => {
+  try{
+  const productId = req.params.id;
+    const buyerData = req.body.buyer;
+    console.log(buyerData)
+    console.log(productId)
+
+
+    const product = await Product.findById(productId);
+
+    if(!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    product.buyer = buyerData;
+    product.sold = true;
+    product.soldAt = new Date.now()
+
+    await product.save();
+
+    return res.json({message: "Winner updated successfully", product: product })
+  } catch(error) {
+    console.log(error)
+    next(error)
+  }
+})
 
 //  POST /api/projects  -  Creates a new product
 router.post("/seller/new-product", isAuthenticated, (req, res, next) => {
