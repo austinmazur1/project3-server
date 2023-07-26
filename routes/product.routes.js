@@ -155,8 +155,9 @@ router.post("/upload", upload, (req, res, next) => {
 router.put("/buyer/:id", async (req, res, next) => {
   try{
   const productId = req.params.id;
-    const buyerData = req.body.buyer;
-    console.log(buyerData)
+    // const buyerData = req.body.buyer;
+    const { currentBidder } = req.body;
+    console.log(currentBidder)
     console.log(productId)
 
 
@@ -166,11 +167,16 @@ router.put("/buyer/:id", async (req, res, next) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    product.buyer = buyerData;
+    product.currentBidder = currentBidder;
     product.sold = true;
-    product.soldAt = new Date.now()
+    product.soldAt = new Date();
+    product.auctionEnded = true
 
     await product.save();
+    console.log(product)
+    console.log(product.currentBidder)
+    console.log(product.sold)
+
 
     return res.json({message: "Winner updated successfully", product: product })
   } catch(error) {
@@ -195,6 +201,7 @@ router.post("/seller/new-product", isAuthenticated, (req, res, next) => {
     duration,
     seller: userId,
     imageUrl,
+    auctionStarted: true
   })
     .then((response) => {
       res.json(response);
