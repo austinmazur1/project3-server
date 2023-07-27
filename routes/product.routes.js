@@ -45,14 +45,11 @@ router.get("/buyer/:id", async (req, res, next) => {
     const seller = await Seller.findById(sellerId);
 
 // timer
-    const now = new Date().getTime();
-    const expirationDate = product.createdAt.getTime() + product.duration * 1000;
-    const remainingTime = Math.max(expirationDate - now, 0)
-
-    const remainingTimer = Math.max(product.timer - Math.floor(remainingTime / 1000), 0);
+const now = new Date().getTime();
+const expirationDateInMilliseconds = product.createdAt.getTime() + product.duration * 60 * 1000;
 
 
-    res.json({ product, seller, currentBidder, remainingTime, remainingTimer });
+    res.json({ product, seller, currentBidder, expirationDateInMilliseconds });
   } catch (error) {
     next(error);
   }
